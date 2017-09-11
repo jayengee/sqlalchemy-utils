@@ -539,6 +539,19 @@ def create_database(url, encoding='utf8', template=None):
         )
         engine.execute(text)
 
+    elif engine.dialect.name == 'redshift':
+        if engine.driver == 'psycopg2':
+            from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+            engine.raw_connection().set_isolation_level(
+                ISOLATION_LEVEL_AUTOCOMMIT
+            )
+
+        text = "CREATE DATABASE {0} ENCODING '{1}'".format(
+            quote(engine, database),
+            encoding
+        )
+        engine.execute(text)
+
     elif engine.dialect.name == 'mysql':
         text = "CREATE DATABASE {0} CHARACTER SET = '{1}'".format(
             quote(engine, database),
