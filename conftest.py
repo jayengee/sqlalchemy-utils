@@ -61,6 +61,9 @@ def postgresql_dsn(postgresql_db_user, db_name):
 def mysql_dsn(mysql_db_user, db_name):
     return 'mysql+pymysql://{0}@localhost/{1}'.format(mysql_db_user, db_name)
 
+@pytest.fixture
+def redshift_dsn(redshift_db_user, db_name):
+    return 'redshift://{0}@localhost/{1}'.format(redshift_db_user, db_name)
 
 @pytest.fixture
 def sqlite_memory_dsn():

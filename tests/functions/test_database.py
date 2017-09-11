@@ -99,3 +99,45 @@ class TestDatabasePostgresWithQuotedName(DatabaseTest):
             postgresql_db_user
         )
         create_database(dsn, template='my-template')
+
+@pytest.mark.usefixtures('redshift_dsn')
+class TestDatabasePostgres(DatabaseTest):
+
+    @pytest.fixture
+    def db_name(self):
+        return 'db_test_sqlalchemy_util'
+
+    def test_template(self, redshift_db_user):
+        (
+            flexmock(sa.engine.Engine)
+            .should_receive('execute')
+            .with_args(
+                "CREATE DATABASE db_test_sqlalchemy_util ENCODING 'utf8' "
+            )
+        )
+        dsn = 'redshift://{0}@localhost/db_test_sqlalchemy_util'.format(
+            redshift_db_user
+        )
+        create_database(dsn)
+
+
+@pytest.mark.usefixtures('redshift_dsn')
+class TestDatabasePostgresWithQuotedName(DatabaseTest):
+
+    @pytest.fixture
+    def db_name(self):
+        return 'db_test_sqlalchemy-util'
+
+    def test_template(self, redshift_db_user):
+        (
+            flexmock(sa.engine.Engine)
+            .should_receive('execute')
+            .with_args(
+                '''CREATE DATABASE "db_test_sqlalchemy-util"'''
+                " ENCODING 'utf8' "
+            )
+        )
+        dsn = 'redshift://{0}@localhost/db_test_sqlalchemy-util'.format(
+            redshift_db_user
+        )
+        create_database(dsn)
